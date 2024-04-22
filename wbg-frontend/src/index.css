@@ -1,0 +1,52 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* tqv = Trương Quang Việt */
+
+.tqv-top-menu-item {
+    @apply cursor-pointer py-1 hover:text-gray-800 relative after:lg:absolute after:lg:bottom-0 
+    after:lg:left-0 after:lg:bg-slate-900 after:lg:h-0.5 after:lg:w-0 hover:after:lg:w-full 
+    after:lg:transition-all after:lg:ease-in-out after:lg:duration-300;
+}
+.tqv-icon {
+    @apply w-5 h-5 inline-block;
+}
+.tqv-badge-circle {
+    @apply text-xs text-center rounded-full px-1.5;
+}
+.tqv-ele-form-register {
+    @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:border-gray-500;
+}
+.tqv-thumb {
+    @apply mb-3 cursor-pointer;
+}
+.tqv-thumb-active {
+    @apply border-x border-y border-gray-800 border-opacity-90;
+}
+.tqv-thumb-hover {
+    @apply hover:border-x hover:border-y hover:border-gray-800 hover:border-opacity-40;
+}
+.form-input {
+    @apply block w-full rounded-md border-[1px] px-4 py-2 text-sm;
+}
+.form-color-choice {
+    @apply border inline-block align-middle rounded-sm appearance-none cursor-pointer size-5 disabled:opacity-75 disabled:cursor-default;
+}
+.ReactModal__Overlay {
+    @apply opacity-0 transition-all duration-300 ease-in -translate-x-10;
+    /* opacity: 0;
+    transition: opacity 2000ms ease-in-out; */
+}
+
+.ReactModal__Overlay--after-open {
+    @apply opacity-100
+    /* opacity: 1; */;
+}
+
+.ReactModal__Overlay--before-close {
+    @apply opacity-0
+    /* opacity: 0; */;
+}
