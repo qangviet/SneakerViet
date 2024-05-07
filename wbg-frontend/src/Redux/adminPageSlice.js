@@ -7,7 +7,9 @@ const adminPageSlice = createSlice({
     },
     reducers: {
         setContentPage: (state, action) => {
+            console.log(action.payload);
             state.contentPage = action.payload;
+            console.log(state.contentPage);
         },
     },
 });

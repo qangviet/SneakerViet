@@ -1,13 +1,15 @@
 import React, { useEffect } from "react";
 import Header from "../HomePage/Header/header";
 import { useState } from "react";
-
+import { setPath3D } from "../Redux/productSlice";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import LoaddingSpiner from "../Loadding/loadding";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addtoCart, openCart, setLoadding } from "../Redux/cartSlice";
+import Display3D from "../Model3D/display3D";
+import { toast } from "react-toastify";
 const size_g_hover =
     "border-x-[0.5px] border-y-[0.5px] font-medium px-4 py-1 hover:bg-slate-800 hover:bg-opacity-90 hover:text-white hover:cursor-pointer hover:transition-all hover:ease-in-out hover:duration-100";
 const size_g_active =
@@ -15,8 +17,7 @@ const size_g_active =
 
 const ProductPage = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const { pCode } = location.state;
+    const pCode = useSelector((state) => state.product.pCodeDisplay);
 
     const [activeImage, setActiveImage] = useState(0);
     const [activeSize, setActiveSize] = useState(-1);
@@ -119,6 +120,15 @@ const ProductPage = () => {
         dispatch(setLoadding(false));
         navigate("/checkout");
     };
+
+    const [isDisplay3D, setIsDisplay3D] = useState(false);
+
+    const handleLoad3D = () => {
+        // dispatch(setPath3D(`http://localhost:8088/api/download-model3d/${pCode}`));
+        // navigate("/3d");
+        setIsDisplay3D(true);
+        setActiveImage(-1);
+    };
     return (
         <>
             {loadding ? (
@@ -142,7 +152,10 @@ const ProductPage = () => {
                                                         ? "tqv-thumb tqv-thumb-active"
                                                         : "tqv-thumb tqv-thumb-hover"
                                                 }
-                                                onClick={() => setActiveImage(index)}
+                                                onClick={() => {
+                                                    setActiveImage(index);
+                                                    setIsDisplay3D(false);
+                                                }}
                                             >
                                                 <img src={image} />
                                             </div>
@@ -150,7 +163,27 @@ const ProductPage = () => {
                                     })}
                                 </div>
                                 <div className="image-view basis-[91%]">
-                                    <img src={images[activeImage]} />
+                                    {isDisplay3D ? (
+                                        <div className="w-full h-[93%] flex justify-center items-center bg-gray-700 bg-opacity-70">
+                                            <Display3D
+                                                type="path"
+                                                pathFile={`http://localhost:8088/api/download-model3d/${pCode}`}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <img src={images[activeImage]} />
+                                        </div>
+                                    )}
+
+                                    <div className="flex justify-center text-xl py-2">
+                                        <button
+                                            className="text-sky-500 underline"
+                                            onClick={handleLoad3D}
+                                        >
+                                            Xem giày dạng 3D
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div className="product-choice basis-[40%] ml-8 font-Quicksand">
@@ -314,11 +347,11 @@ const ProductPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="description flex justify-center">
+                    {/* <div className="description flex justify-center">
                         <div>
                             <h1 className="text-2xl font-bold">Thông tin chi tiết</h1>
                         </div>
-                    </div>
+                    </div> */}
                 </>
             )}
         </>

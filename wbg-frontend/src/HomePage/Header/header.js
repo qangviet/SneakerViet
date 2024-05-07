@@ -3,10 +3,33 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { openCart, closeCart } from "../../Redux/cartSlice";
 import SideCart from "../../SideCart/sideCart";
+import axios from "axios";
 function Header() {
     const products = useSelector((state) => state.cart.products);
 
     const [hidden, setHidden] = useState(false);
+
+    const [brand, setBrand] = useState([]);
+
+    useEffect(() => {
+        const getBrand = async () => {
+            await axios.get("http://localhost:8088/api/get-brands").then((res) => {
+                let data = res.data.DT.brands;
+                for (let i = 0; i < data.length; i++) {
+                    for (let j = i + 1; j < data.length; j++) {
+                        if (data[i].cates.length < data[j].cates.length) {
+                            let temp = data[i];
+                            data[i] = data[j];
+                            data[j] = temp;
+                        }
+                    }
+                }
+                setBrand(data);
+                console.log(data);
+            });
+        };
+        getBrand();
+    }, []);
 
     const dispatch = useDispatch();
 
@@ -65,6 +88,14 @@ function Header() {
     const openModalCart = () => {
         dispatch(openCart());
     };
+    const [showCategory, setShowCategory] = useState(-1);
+
+    const openCategory = (index) => {
+        setShowCategory(index);
+    };
+    const closeCategory = () => {
+        setShowCategory(-1);
+    };
 
     return (
         <>
@@ -77,25 +108,59 @@ function Header() {
                 >
                     SneakersViet
                 </Link>
-                <ul className="basis-3/6 hidden lg:flex lg:flex-row lg:justify-end lg:items-center lg:gap-8 uppercase text-sm text-gray-500 font-medium">
-                    <li className="tqv-top-menu-item">
-                        <a href="#">Nike</a>
-                    </li>
-                    <li className="tqv-top-menu-item">
-                        <a href="#">Adidas</a>
-                    </li>
-                    <li className="tqv-top-menu-item">
-                        <a href="#">NewBalance</a>
-                    </li>
-                    <li className="tqv-top-menu-item">
-                        <a href="#">Vans</a>
-                    </li>
-                    <li className="tqv-top-menu-item">
-                        <a href="#">MLB</a>
-                    </li>
-                    <li className="tqv-top-menu-item">
-                        <a href="#">Hãng khác</a>
-                    </li>
+                <ul className="basis-3/6 hidden lg:flex lg:flex-row lg:justify-end lg:items-center lg:gap-8 text-base ">
+                    {brand.map((item, index) => {
+                        return (
+                            <li className="relative" key={index}>
+                                <Link
+                                    className="tqv-top-menu-item uppercase text-gray-500 font-semibold"
+                                    href="#"
+                                    onMouseEnter={() => openCategory(index)}
+                                >
+                                    {item.name}
+                                </Link>
+
+                                {showCategory === index && (
+                                    <div className="absolute top-0 translate-y-5 -translate-x-[50%] w-[450px] py-3 transition-all ease-in-out duration-1000">
+                                        <div
+                                            onMouseEnter={() => openCategory(index)}
+                                            onMouseLeave={() => closeCategory()}
+                                            className="grid grid-cols-2 px-5 py-4 text-base font-medium text-gray-500 text-opacity-80 border-x border-y rounded-md z-10 shadow-md bg-white"
+                                        >
+                                            <ul className="col-span-1">
+                                                {item.cates.map((cate, index1) => {
+                                                    if (index1 < item.cates.length / 2)
+                                                        return (
+                                                            <li
+                                                                key={index1}
+                                                                className="py-1 hover:text-slate-950 transition-all ease-in-out duration-100"
+                                                            >
+                                                                <Link>{cate}</Link>
+                                                            </li>
+                                                        );
+                                                    else return "";
+                                                })}
+                                            </ul>
+                                            <ul className="col-span-1">
+                                                {item.cates.map((cate, index2) => {
+                                                    if (index2 > item.cates.length / 2)
+                                                        return (
+                                                            <li
+                                                                key={index2}
+                                                                className="py-1 hover:text-slate-950 transition-all ease-in-out duration-100"
+                                                            >
+                                                                <Link>{cate}</Link>
+                                                            </li>
+                                                        );
+                                                    else return "";
+                                                })}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                )}
+                            </li>
+                        );
+                    })}
                 </ul>
                 <ul className="basis-3/6 lg:basis-1/6 flex justify-end lg:justify-start items-center ml-16 uppercase text-sm text-gray-500 font-medium">
                     <li className="tqv-top-menu-item flex flex-row">

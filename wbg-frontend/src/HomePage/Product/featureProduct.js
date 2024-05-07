@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { setPCodeDisplay } from "../../Redux/productSlice";
 const FeatureProduct = () => {
     const navigate = useNavigate();
 
     const [products, setProducts] = useState([]);
-
+    const dispatch = useDispatch();
     // const [code, setCode] = useContext(GlobalContext);
 
     useEffect(() => {
@@ -50,7 +51,8 @@ const FeatureProduct = () => {
     }
 
     const loadDetailProduct = (index) => {
-        navigate("/product", { state: { pCode: products[index].code } });
+        navigate("/product");
+        dispatch(setPCodeDisplay(products[index].code));
     };
 
     return (
@@ -65,22 +67,17 @@ const FeatureProduct = () => {
                                 onClick={() => loadDetailProduct(index)}
                             >
                                 <img
+                                    alt={product.code}
                                     src={product.image}
                                     className="hover:opacity-85 hover:transition-all hover:ease-in hover:duration-300"
                                 />
-                                <a>
+                                <div>
                                     <div className="">
                                         <div className="absolute bg-red-500 py-1 px-2 top-2 right-2 text-[12px] text-center font-semibold text-white rounded-xl">
                                             -{product.discount}%
                                         </div>
-                                        {/* <div
-                                            className="absolute w-[80%] text-center left-1/2 -translate-x-1/2 bottom-2 bg-slate-400 uppercase text-sm
-                                tracking-wider px-3 py-2 hidden group-hover:block hover:bg-opacity-90 group-hover:animate-fadeIn shadow-3xl"
-                                        >
-                                            Thêm vào giỏ
-                                        </div> */}
                                     </div>
-                                </a>
+                                </div>
                             </div>
                             <div className="text-center mt-4">
                                 <Link onClick={() => loadDetailProduct(index)}>

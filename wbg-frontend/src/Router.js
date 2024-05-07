@@ -16,6 +16,7 @@ import LoaddingSpiner from "./Loadding/loadding";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { setLoadding } from "./Redux/appSlice";
+import SearchPage from "./SearchPage/searchPage";
 
 const customStyles = {
     overlay: {
@@ -62,8 +63,7 @@ function AllRouter() {
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/checkout" element={<CheckOut />} />
                     <Route path="/checkout/next" element={<CheckOut2 />} />
-                    <Route path="/3d" element={<Display3D />} />
-                    <Route path="test" element={<CheckOut3 />} />
+                    <Route path="/search" element={<SearchPage />} />
                 </Routes>
             </Router>
         </>

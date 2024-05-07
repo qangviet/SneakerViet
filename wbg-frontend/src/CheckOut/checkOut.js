@@ -16,7 +16,6 @@ import {
     getAccordionDetailsUtilityClass,
 } from "@mui/material";
 import Modal from "react-modal";
-import zIndex from "@mui/material/styles/zIndex";
 import { useNavigate } from "react-router-dom";
 import { setOrderID } from "../Redux/orderSlice";
 
@@ -160,10 +159,10 @@ const CheckOut = () => {
     };
 
     const createID = () => {
-        var today = new Date();
-        var day = String(today.getDate()).padStart(2, "0");
-        var month = String(today.getMonth() + 1).padStart(2, "0");
-        var year = String(today.getFullYear()).slice(-2);
+        let today = new Date();
+        let day = String(today.getDate()).padStart(2, "0");
+        let month = String(today.getMonth() + 1).padStart(2, "0");
+        let year = String(today.getFullYear()).slice(-2);
         let formattedDate = day + month + year;
         let count = localStorage.getItem("qv-order-count");
         if (!count) {
@@ -184,6 +183,11 @@ const CheckOut = () => {
         let id = "OD" + formattedDate + String(count.c).padStart(5, "0");
         return id;
     };
+
+    const [odID, setOdID] = useState("");
+    useEffect(() => {
+        setOdID(createID());
+    }, []);
     const dispatch = useDispatch();
     const nextStep = async () => {
         setIsLoadding(true);
@@ -236,26 +240,26 @@ const CheckOut = () => {
             };
             products_od.push(product);
         }
-        let id = createID();
+
         let order_info = {
-            id: id,
+            id: odID,
             name: name,
             email: email,
             phone: phone,
             deliveryMethod: deliveryMethod,
             address: address_od,
             products: products_od,
+            total: deliveryMethod === "ship" ? totalPrice() + 30000 : totalPrice(),
+            paymentMethod: "Chuyển khoản ngân hàng",
             date: getCurrentDate(),
         };
 
         const res = await axios.post("http://localhost:8088/api/create-order", order_info);
         if (res.data.EC === "0") {
             alert("Đặt hàng thành công");
-            if (countOD) {
-                countOD.c += 1;
-                localStorage.setItem("qv-order-count", JSON.stringify(countOD));
-            }
-            dispatch(setOrderID(id));
+            countOD.c++;
+            localStorage.setItem("qv-order-count", JSON.stringify(countOD));
+            dispatch(setOrderID(odID));
             navigate("/checkout/next");
         } else {
             console.log(res.data.EM);

@@ -3,17 +3,19 @@ import connection from "../config/database";
 const creatOrder = async (data) => {
     try {
         await connection.query(
-            `insert into orders (id, name, email, phone, delivery, address, products, dateOrder, status)
-            values (?, ?, ?, ?, ?, ?, ?, ?, "pending")`,
+            `insert into orders (id, name, email, phone, delivery, paymentMethod, address, products, dateOrder, status, total)
+            values (?, ?, ?, ?, ?, ?, ?, ?, ?, "Đợi thanh toán", ?)`,
             [
                 data.id,
                 data.name,
                 data.email,
                 data.phone,
                 data.deliveryMethod,
+                data.paymentMethod,
                 data.address,
                 JSON.stringify(data.products),
                 data.date,
+                data.total,
             ]
         );
         return {
@@ -39,7 +41,6 @@ const getOrder = async (data) => {
             where id = ?`,
             [data.odID]
         );
-        console.log(r1);
         let dt = {
             id: r1[0].id,
             name: r1[0].name,
@@ -64,5 +65,122 @@ const getOrder = async (data) => {
         };
     }
 };
-
-export { creatOrder, getOrder };
+const getAllOrders = async () => {
+    try {
+        let [r1, f1] = await connection.query(
+            `select id, name, email, phone, delivery, paymentMethod, address, dateOrder, status, total
+            from orders
+            order by id desc`
+        );
+        let dt = [];
+        for (const result of r1) {
+            dt.push({
+                id: result.id,
+                name: result.name,
+                email: result.email,
+                phone: result.phone,
+                delivery: result.delivery,
+                paymentMethod: result.paymentMethod,
+                address: result.address,
+                dateOrder: result.dateOrder,
+                status: result.status,
+                total: result.total,
+            });
+        }
+        return {
+            EM: "Get all orders successfully",
+            EC: "0",
+            DT: dt,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: "Database is encountering an error",
+            EC: "-1",
+            DT: "",
+        };
+    }
+};
+const updateOrder = async (data) => {
+    try {
+        let orderID = data.data.orderID;
+        let status = data.data.status;
+        let [r1, f1] = await connection.query(
+            `select status
+            from orders
+            where id = ?`,
+            [orderID]
+        );
+        if (r1[0].status === "Thành công!") {
+            return {
+                EM: "Đơn hàng đã thành công, không thể cập nhật!",
+                EC: "1",
+                DT: "",
+            };
+        } else if (r1[0].status === "Đã hủy!") {
+            return {
+                EM: "Đơn hàng đã hủy, không thể cập nhật!",
+                EC: "1",
+                DT: "",
+            };
+        }
+        if (status === "Thành công!") {
+            let [r2, f2] = await connection.query(
+                `select products from orders
+                where id = ?`,
+                [orderID]
+            );
+            let products = JSON.parse(r2[0].products);
+            for (const product of products) {
+                let [r3, f3] = await connection.query(
+                    `select color from product
+                    where name = ?`,
+                    [product.name]
+                );
+                let color = JSON.stringify(r3[0].color);
+                for (const s_q of color.size_quan) {
+                    if (s_q.size === product.size) {
+                        s_q.quantity = parseInt(s_q.quantity) - parseInt(product.quantity);
+                    }
+                }
+                const [r4, f4] = await connection.query(
+                    `select code from product
+                    where name = ?`,
+                    [product.name]
+                );
+                let sq = {
+                    price: product.price,
+                    size: product.size,
+                    quantity: product.quantity,
+                    color: product.color,
+                };
+                let revenue = product.price * product.quantity;
+                let code = r4[0].code;
+                await connection.query(
+                    `insert into sold 
+                    values(?, ?, ?, ?)`,
+                    [code, JSON.stringify(sq), revenue, orderID]
+                );
+            }
+        }
+        await connection.query(
+            `update orders
+            set status = ?
+            where id = ?`,
+            [status, orderID]
+        );
+        return {
+            EM: "Update order successfully",
+            EC: "0",
+            DT: "",
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: "Database is encountering an error",
+            EC: "-1",
+            DT: "",
+        };
+    }
+};
+export { creatOrder, getOrder, getAllOrders, updateOrder };

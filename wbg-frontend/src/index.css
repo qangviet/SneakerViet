@@ -35,18 +35,3 @@
 .form-color-choice {
     @apply border inline-block align-middle rounded-sm appearance-none cursor-pointer size-5 disabled:opacity-75 disabled:cursor-default;
 }
-.ReactModal__Overlay {
-    @apply opacity-0 transition-all duration-300 ease-in -translate-x-10;
-    /* opacity: 0;
-    transition: opacity 2000ms ease-in-out; */
-}
-
-.ReactModal__Overlay--after-open {
-    @apply opacity-100
-    /* opacity: 1; */;
-}
-
-.ReactModal__Overlay--before-close {
-    @apply opacity-0
-    /* opacity: 0; */;
-}

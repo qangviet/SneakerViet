@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import profile from "../profile.png";
-import ReactDOM from "react-dom/client";
-import App from "../../App";
 import axios from "axios";
 import LoaddingSpiner from "../../Loadding/loadding";
+import Display3D from "../../Model3D/display3D";
+import { useDispatch } from "react-redux";
+import { setLoadding } from "../../Redux/appSlice";
 const CreateProduct = () => {
     const [brands, setBrands] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [loadding, setLoadding] = useState(false);
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const getBrands = async () => {
-            setLoadding(true);
+            dispatch(setLoadding(true));
             await fetch("http://localhost:8088/api/get-brands", {
                 method: "GET",
             })
@@ -20,6 +21,7 @@ const CreateProduct = () => {
                     if (data.EC === "0") {
                         setCategories(data.DT.categories);
                         setBrands(data.DT.brands);
+                        dispatch(setLoadding(false));
                     } else alert(data.EM);
                 })
                 .catch((error) => {
@@ -85,6 +87,7 @@ const CreateProduct = () => {
     const fileInputRef = useRef(null);
 
     const handleDropImage = (e) => {
+        dispatch(setLoadding(true));
         e.preventDefault();
         const imageFile = e.dataTransfer.files[0];
 
@@ -94,6 +97,7 @@ const CreateProduct = () => {
             const dt = { name: name, url: imageURL, file: imageFile };
             setImages((prev) => [...prev, dt]);
         }
+        dispatch(setLoadding(false));
     };
 
     const handleChooseImage = (e) => {
@@ -173,6 +177,33 @@ const CreateProduct = () => {
         setPcode(genProductCode());
     }, []);
 
+    function convertByteToMegabyte(byte) {
+        const megabyte = byte / (1024 * 1024);
+        const roundedMegabyte = Math.round(megabyte * 100) / 100;
+        return roundedMegabyte;
+    }
+
+    const input3DRef = useRef(null);
+    const [file3DName, setFile3DName] = useState([]);
+    const [file3DData, setFile3DData] = useState("");
+    const handleChoose3DModel = () => {
+        const file3D = input3DRef.current.files[0];
+        setModel3D(file3D);
+        if (!file3D) {
+            alert("Vui lòng chọn file 3D model");
+            return;
+        }
+        let cap = convertByteToMegabyte(file3D.size);
+        setFile3DName([file3D.name, cap]);
+        if (file3D) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setFile3DData(reader.result);
+            };
+            reader.readAsDataURL(file3D);
+        }
+    };
+
     const [pname, setPname] = useState("");
     const [pcode, setPcode] = useState("");
     const [pbrand, setPbrand] = useState("");
@@ -181,6 +212,7 @@ const CreateProduct = () => {
     const [pprice, setPprice] = useState();
     const [pdiscount, setPdiscount] = useState();
     const [pvisibility, setPvisibility] = useState("");
+    const [model3D, setModel3D] = useState({});
 
     const resetValue = () => {
         setPname("");
@@ -207,6 +239,9 @@ const CreateProduct = () => {
             URL.revokeObjectURL(image.url);
         }
         setPcode(genProductCode());
+        setModel3D({});
+        setFile3DData("");
+        setFile3DName([]);
     };
 
     const handleCreateProduct = async () => {
@@ -234,7 +269,11 @@ const CreateProduct = () => {
             alert("Vui lòng thêm ảnh!");
             return;
         }
-
+        if (!model3D) {
+            alert("Vui lòng thêm model 3D!");
+            return;
+        }
+        dispatch(setLoadding(true));
         for (const color of countColor) {
             if (color.name === "") {
                 countColor.splice(countColor.indexOf(color), 1);
@@ -264,6 +303,7 @@ const CreateProduct = () => {
         for (const image of images) {
             formData.append("images", image.file);
         }
+        formData.append("model3D", model3D);
 
         console.log(formData);
 
@@ -280,6 +320,7 @@ const CreateProduct = () => {
                     countCode.c++;
                     localStorage.setItem("qv-product-count", JSON.stringify(countCode));
                     resetValue();
+                    dispatch(setLoadding(false));
                 } else {
                     alert(data.EM);
                 }
@@ -287,7 +328,6 @@ const CreateProduct = () => {
             .catch((error) => {
                 console.log(error);
             });
-        setLoadding(false);
     };
 
     return (
@@ -555,7 +595,7 @@ const CreateProduct = () => {
                                 Product Images
                             </label>
                             <div
-                                class="flex items-center justify-center bg-white border border-dashed
+                                className="flex items-center justify-center bg-white border border-dashed
                                 rounded-md cursor-pointer dropzone border-slate-300 min-h-[200px]"
                                 onDrop={(e) => {
                                     handleDropImage(e);
@@ -645,6 +685,51 @@ const CreateProduct = () => {
                                         );
                                     })}
                             </ul>
+                        </div>
+                        <div className="col-span-12">
+                            <label className="inline-block mb-2 text-base font-medium">
+                                Product Model 3D
+                            </label>
+                            <div className="w-full h-[700px] border border-slate-300 bg-white border-dashed rounded-md relative">
+                                {file3DName.length > 0 && (
+                                    <div className="absolute top-0 py-4 left-1/2 -translate-x-[50%] text-[15px] text-gray-200">
+                                        <span className="px-2">{file3DName[0]}</span>
+                                        <span className="font-bold">{file3DName[1]} </span>
+                                        <span>MB</span>
+                                    </div>
+                                )}
+                                {file3DName.length > 0 ? (
+                                    <div className="bg-gray-700 bg-opacity-65 h-full">
+                                        <Display3D fileData={file3DData} type={"data"}></Display3D>
+                                    </div>
+                                ) : (
+                                    <div className="flex justify-center gap-3 items-center h-full flex-col py-5 text-lg text-center">
+                                        <div className="text-slate-500">
+                                            <i class="fa-solid fa-cubes fa-4x"></i>
+                                        </div>
+                                        <h5 class="mb-0 font-normal text-slate-500 text-[15px]">
+                                            Display 3D model of your product
+                                        </h5>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex justify-center items-center px-3 py-4">
+                                <input
+                                    type="file"
+                                    accept=".glb, .gltf"
+                                    hidden
+                                    ref={input3DRef}
+                                    onChange={() => handleChoose3DModel()}
+                                />
+                                <button
+                                    className="bg-blue-400 px-3 py-3 rounded-md cursor-pointer text-white hover:bg-blue-600"
+                                    onClick={() => input3DRef.current.click()}
+                                >
+                                    <span>
+                                        Upload 3D Model <i class="fa-solid fa-upload"></i>
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                         <div className="xl:col-span-4 ">
                             <label className="inline-block mb-2 text-base font-medium">Price</label>

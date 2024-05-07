@@ -7,7 +7,7 @@ const sb_item_active =
     " py-3 px-2 my-3 bg-blue-500 fill-blue-500 bg-opacity-5 rounded-xl text-blue-600 cursor-pointer";
 const sub_item = "pb-3 hover:text-blue-400 hover:cursor-pointer";
 const active_sub_item = "pb-3 text-blue-400 cursor-pointer";
-const SideBar = () => {
+const SideBar = ({ content, setContent }) => {
     const [activeContent, setActiveContent] = useState("");
     const dispatch = useDispatch();
     const contentPage = useSelector((state) => state.admin.contentPage);
@@ -128,14 +128,17 @@ const SideBar = () => {
                 {activeContent === "4" && (
                     <div className="ml-9">
                         <ul className="list-disc">
-                            <li className="pb-3 hover:text-blue-400 hover:cursor-pointer">
+                            <li
+                                className={content === "view-product" ? active_sub_item : sub_item}
+                                onClick={() => setContent("view-product")}
+                            >
                                 <span>View</span>
                             </li>
                             <li
                                 className={
-                                    contentPage === "add-new-product" ? sub_item : active_sub_item
+                                    content === "add-new-product" ? active_sub_item : sub_item
                                 }
-                                onClick={() => dispatch(setContentPage("add-new-product"))}
+                                onClick={() => setContent("add-new-product")}
                             >
                                 <span>Add New</span>
                             </li>
@@ -148,7 +151,7 @@ const SideBar = () => {
                         // if (activeContent === "5") setActiveContent("-1");
                         // else
                         setActiveContent("5");
-                        dispatch(setContentPage("order"));
+                        setContent("order");
                     }}
                 >
                     <div className="flex flex-row items-center justify-between">
