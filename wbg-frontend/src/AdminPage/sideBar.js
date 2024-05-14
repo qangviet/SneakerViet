@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setContentPage } from "../Redux/adminPageSlice";
+import { setContentPage } from "../Redux/adminSlice";
 const sb_item_hover =
     "py-3 px-2 my-3 hover:fill-blue-500 hover:bg-blue-500 hover:bg-opacity-5 hover:rounded-xl hover:text-[#578fff] cursor-pointer";
 const sb_item_active =
@@ -8,75 +8,39 @@ const sb_item_active =
 const sub_item = "pb-3 hover:text-blue-400 hover:cursor-pointer";
 const active_sub_item = "pb-3 text-blue-400 cursor-pointer";
 const SideBar = ({ content, setContent }) => {
-    const [activeContent, setActiveContent] = useState("");
+    const [activeContent, setActiveContent] = useState("1");
     const dispatch = useDispatch();
     const contentPage = useSelector((state) => state.admin.contentPage);
-
     return (
         <div className=" bg-white py-4">
             <h2 className="font-bold text-3xl px-4 mt-2 mb-4">Admin</h2>
             <div className="text-gray-400 px-3 text-[12px] text-left">MENU</div>
             <div className="navbar px-4 text-gray-500 text-opacity-70 text-sm font-semibold">
                 <div
-                    className={sb_item_hover}
+                    className={activeContent === "1" ? sb_item_active : sb_item_hover}
                     onClick={() => {
-                        if (activeContent === "1") setActiveContent("-1");
-                        else setActiveContent("1");
+                        setActiveContent("1");
+                        // setContent("");
+                        dispatch(setContentPage(""));
                     }}
                 >
                     <div className="flex flex-row items-center justify-between">
-                        <span>Dashbroads</span>
-                        <div className="w-7 h-7 flex justify-center items-center">
-                            {activeContent === "1" ? (
-                                <i class="fa-solid fa-chevron-down"></i>
-                            ) : (
-                                <i class="fa-solid fa-chevron-right"></i>
-                            )}
-                        </div>
+                        <span className="py-1">Dashbroads</span>
                     </div>
                 </div>
-                {activeContent === "1" && (
-                    <div className="ml-9">
-                        <ul className="list-disc">
-                            <li className="pb-3 hover:text-blue-400 hover:cursor-pointer">
-                                <span>View User</span>
-                            </li>
-                            <li className="pb-3 hover:text-blue-400 hover:cursor-pointer">
-                                <span>Analytics</span>
-                            </li>
-                        </ul>
-                    </div>
-                )}
                 <div
-                    className={sb_item_hover}
+                    className={activeContent === "2" ? sb_item_active : sb_item_hover}
                     onClick={() => {
-                        if (activeContent === "2") setActiveContent("-1");
-                        else setActiveContent("2");
+                        // setContent("view-brand");
+                        setActiveContent("2");
+                        dispatch(setContentPage("view-brand"));
                     }}
                 >
                     <div className="flex flex-row items-center justify-between">
-                        <span>Brand</span>
-                        <div className="w-7 h-7 flex justify-center items-center">
-                            {activeContent === "2" ? (
-                                <i class="fa-solid fa-chevron-down"></i>
-                            ) : (
-                                <i class="fa-solid fa-chevron-right"></i>
-                            )}
-                        </div>
+                        <span className="py-1">Brand</span>
                     </div>
                 </div>
-                {activeContent === "2" && (
-                    <div className="ml-9">
-                        <ul className="list-disc">
-                            <li className="pb-3 hover:text-blue-400 hover:cursor-pointer">
-                                <span>View Brand</span>
-                            </li>
-                            <li className="pb-3 hover:text-blue-400 hover:cursor-pointer">
-                                <span>Create Brand</span>
-                            </li>
-                        </ul>
-                    </div>
-                )}
+
                 <div
                     className={sb_item_hover}
                     onClick={() => {
@@ -99,10 +63,10 @@ const SideBar = ({ content, setContent }) => {
                     <div className="ml-9">
                         <ul className="list-disc" contentPages>
                             <li className="pb-3 hover:text-blue-400 hover:cursor-pointer">
-                                <span>View Category</span>
+                                <span>View</span>
                             </li>
                             <li className="pb-3 hover:text-blue-400 hover:cursor-pointer">
-                                <span>Create Category</span>
+                                <span>Add New</span>
                             </li>
                         </ul>
                     </div>
@@ -129,16 +93,18 @@ const SideBar = ({ content, setContent }) => {
                     <div className="ml-9">
                         <ul className="list-disc">
                             <li
-                                className={content === "view-product" ? active_sub_item : sub_item}
-                                onClick={() => setContent("view-product")}
+                                className={
+                                    contentPage === "view-product" ? active_sub_item : sub_item
+                                }
+                                onClick={() => dispatch(setContentPage("view-product"))}
                             >
                                 <span>View</span>
                             </li>
                             <li
                                 className={
-                                    content === "add-new-product" ? active_sub_item : sub_item
+                                    contentPage === "add-new-product" ? active_sub_item : sub_item
                                 }
-                                onClick={() => setContent("add-new-product")}
+                                onClick={() => dispatch(setContentPage("add-new-product"))}
                             >
                                 <span>Add New</span>
                             </li>
@@ -151,11 +117,11 @@ const SideBar = ({ content, setContent }) => {
                         // if (activeContent === "5") setActiveContent("-1");
                         // else
                         setActiveContent("5");
-                        setContent("order");
+                        dispatch(setContentPage("order"));
                     }}
                 >
                     <div className="flex flex-row items-center justify-between">
-                        <span>Order</span>
+                        <span className="py-1">Order</span>
                     </div>
                 </div>
             </div>

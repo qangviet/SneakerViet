@@ -5,7 +5,6 @@ const saveCartStateMiddleware = (store) => (next) => (action) => {
 
     // Lưu trạng thái "cart" vào cookie
     const cartState = store.getState().cart;
-    console.log(cartState);
     sessionStorage.setItem("cartState", JSON.stringify(cartState));
 
     return result;

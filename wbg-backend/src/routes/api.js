@@ -15,6 +15,7 @@ import {
 } from "../controllers/createProduct";
 import { getProduct, handleAdminGetProducts, handleGetModel3D } from "../controllers/getProduct";
 import { handleCreateOrder, handleGetOrder, handleUpdateOrder } from "../controllers/Order";
+import { handleAddNewBrand, handleGetAllBrands } from "../controllers/handleBrand";
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -51,6 +52,11 @@ const initApiRoutes = (app) => {
     router.post("/admin/edit-price", handleAdjustPrice);
     router.post("/admin/edit-quantity", handleAdjustQuantity);
     router.post("/admin/hide-product", handleHideProduct);
+
+    //BRAND
+    router.get("/admin/get-brands", handleGetAllBrands);
+    router.post("/admin/add-brand", handleAddNewBrand);
+
     //API: http://localhost:8088/api/
     //ORDER
     router.post("/create-order", handleCreateOrder);

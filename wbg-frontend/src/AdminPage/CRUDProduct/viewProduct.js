@@ -4,6 +4,7 @@ import Modal from "react-modal";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setPCodeDisplay } from "../../Redux/productSlice";
+import { setLoadding } from "../../Redux/appSlice";
 const customStyles = {
     content: {
         top: "50%",
@@ -31,6 +32,7 @@ const ViewProduct = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         const getListProducts = async () => {
+            dispatch(setLoadding(true));
             await axios.get("http://localhost:8088/api/admin/get-products").then((res) => {
                 if (res.data.EC === "0") {
                     for (const d of res.data.DT) {
@@ -47,6 +49,7 @@ const ViewProduct = () => {
                     alert(res.data.EM);
                 }
             });
+            dispatch(setLoadding(false));
         };
         getListProducts();
     }, [change]);
@@ -81,6 +84,7 @@ const ViewProduct = () => {
         setProductAdjustPrice({});
     };
     const handleAdjustPrice = async () => {
+        dispatch(setLoadding(true));
         await axios
             .post("http://localhost:8088/api/admin/edit-price", {
                 code: productAdjustPrice.code,
@@ -96,6 +100,7 @@ const ViewProduct = () => {
                     alert(res.data.EM);
                 }
             });
+        dispatch(setLoadding(false));
     };
 
     const [modalAdjustQuantity, setModalAdjustQuantity] = useState(false);
@@ -129,6 +134,7 @@ const ViewProduct = () => {
             name: productAdjustQuantity.color,
             size_quan: quantity,
         };
+        dispatch(setLoadding(true));
         await axios
             .post("http://localhost:8088/api/admin/edit-quantity", {
                 code: productAdjustQuantity.code,
@@ -143,6 +149,7 @@ const ViewProduct = () => {
                     alert(res.data.EM);
                 }
             });
+        dispatch(setLoadding(false));
     };
     const addSize = () => {
         setQuantity((prev) => {
@@ -169,6 +176,7 @@ const ViewProduct = () => {
         setModalHide(false);
     };
     const handleHide = async () => {
+        dispatch(setLoadding(true));
         await axios
             .post("http://localhost:8088/api/admin/hide-product", {
                 code: productHide,
@@ -183,6 +191,7 @@ const ViewProduct = () => {
                     alert(res.data.EM);
                 }
             });
+        dispatch(setLoadding(false));
     };
 
     const [modalDisplay, setModalDisplay] = useState(false);
@@ -380,6 +389,7 @@ const ViewProduct = () => {
                                 className="form-input border-slate-200 focus:outline-none focus:border-blue-500 focus:border-custom-500
                           disabled:bg-slate-100 disabled:border-slate-300 disabled:text-slate-500 placeholder:text-slate-400"
                                 value={productAdjustQuantity.name}
+                                disabled
                             />
                         </div>
                         <div className="col-span-2">

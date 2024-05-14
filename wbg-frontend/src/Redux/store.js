@@ -3,8 +3,8 @@ import saveCartStateMiddleware from "./Middleware/saveCart";
 import cartSlice from "./cartSlice";
 import orderSlice from "./orderSlice";
 import appSlice from "./appSlice";
-import adminPageSlice from "./adminPageSlice";
 import productSlice from "./productSlice";
+import adminSlice from "./adminSlice";
 const persistedCartState = sessionStorage.getItem("cartState");
 const initialState = persistedCartState
     ? JSON.parse(persistedCartState)
@@ -20,7 +20,7 @@ const store = configureStore({
         order: orderSlice,
         app: appSlice,
         product: productSlice,
-        admin: adminPageSlice,
+        admin: adminSlice,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(saveCartStateMiddleware),
     preloadedState: { cart: initialState },

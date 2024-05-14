@@ -8,10 +8,8 @@ import ProductPage from "./ProductPage/productPage";
 import AdminPage from "./AdminPage/adminPage";
 
 import CheckOut from "./CheckOut/checkOut";
-import Display3D from "./Model3D/display3D";
 import Modal from "react-modal";
 import CheckOut2 from "./CheckOut/checkOut2";
-import CheckOut3 from "./CheckOut/checkOut3";
 import LoaddingSpiner from "./Loadding/loadding";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -38,7 +36,7 @@ const customStyles = {
         border: "none",
     },
 };
-
+Modal.setAppElement("#root");
 function AllRouter() {
     const loadding = useSelector((state) => state.app.isLoadding);
     const dispatch = useDispatch();

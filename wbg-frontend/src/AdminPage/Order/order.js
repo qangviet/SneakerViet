@@ -67,6 +67,7 @@ const Order = () => {
             });
             if (response.data.EC === "0") {
                 let dt = [];
+                let statusAction;
                 let newOd = 0;
                 let pendingOd = 0;
                 let shippingOd = 0;
@@ -77,15 +78,19 @@ const Order = () => {
                     if (order.status === "Đã hủy") {
                         status = [order.status, styleCancel];
                         cancelOd++;
+                        statusAction = [];
                     } else if (order.status === "Thành công") {
                         status = [order.status, styleSuccess];
                         successOd++;
+                        statusAction = [false, false, true, false];
                     } else if (order.status === "Đợi thanh toán") {
                         status = [order.status, stylePending];
                         pendingOd++;
+                        statusAction = [true, true, true, true];
                     } else if (order.status === "Đang giao hàng") {
                         status = [order.status, styleShipping];
                         shippingOd++;
+                        statusAction = [true, false, true, false];
                     }
                     if (isInCurrentMonth(order.dateOrder)) {
                         newOd++;
@@ -98,6 +103,7 @@ const Order = () => {
                         paymentMethod: order.paymentMethod,
                         total: order.total,
                         status: status,
+                        statusAction: statusAction,
                     });
                 }
                 setTotalOrders(dt.length);
@@ -105,6 +111,7 @@ const Order = () => {
                 setShippingOrders(shippingOd);
                 setSuccessOrders(successOd);
                 setCancelOrders(cancelOd);
+                setPendingOrders(pendingOd);
                 setNewOrders(newOd);
                 setOrderList(dt);
                 setOrderList2(dt);
@@ -116,27 +123,27 @@ const Order = () => {
         getOrderList();
     }, [updateOrderList]);
 
-    const [modalEdit, setModalEdit] = useState(false);
-    const [infoEdit, setInfoEdit] = useState({});
-    // const [indexEdit, setIndexEdit] = useState(-1);
-    const openModalEdit = (index) => {
-        dispatch(setLoadding(true));
-        setModalEdit(true);
-        setInfoEdit(orderList[index]);
-        dispatch(setLoadding(false));
-    };
+    // const [modalEdit, setModalEdit] = useState(false);
+    // const [infoEdit, setInfoEdit] = useState({});
+    // // const [indexEdit, setIndexEdit] = useState(-1);
+    // const openModalEdit = (index) => {
+    //     dispatch(setLoadding(true));
+    //     setModalEdit(true);
+    //     setInfoEdit(orderList[index]);
+    //     dispatch(setLoadding(false));
+    // };
 
-    const closeModalEdit = () => {
-        setInfoEdit({});
-        setModalEdit(false);
-    };
+    // const closeModalEdit = () => {
+    //     setInfoEdit({});
+    //     setModalEdit(false);
+    // };
     const handleChangeStatus = async () => {
         dispatch(setLoadding(true));
         let response = await axios.post("http://localhost:8088/api/update-order", {
             type: "update-one",
             data: {
-                orderID: infoEdit.orderID,
-                status: infoEdit.status[0],
+                orderID: orderList2[indexEdit].orderID,
+                status: newStatus[1],
             },
         });
         if (response.data.EC === "0") {
@@ -146,7 +153,7 @@ const Order = () => {
             alert(response.data.EM);
         }
         dispatch(setLoadding(false));
-        closeModalEdit();
+        closeModalConfirm();
     };
 
     const [activeQuery, setActiveQuery] = useState(0);
@@ -175,9 +182,24 @@ const Order = () => {
     const [successOrders, setSuccessOrders] = useState(0);
     const [cancelOrders, setCancelOrders] = useState(0);
 
+    const [dropChangeState, setDropChangeState] = useState(-1);
+
+    const [modalConfirm, setModalConfirm] = useState(false);
+    const [indexEdit, setIndexEdit] = useState(-1);
+    const [newStatus, setNewStatus] = useState([]);
+    const openModalConfirm = (index) => {
+        setModalConfirm(true);
+        setIndexEdit(index);
+    };
+    const closeModalConfirm = () => {
+        setModalConfirm(false);
+        setIndexEdit(-1);
+        setNewStatus([]);
+    };
+
     return (
         <>
-            {modalEdit && (
+            {/* {modalEdit && (
                 <Modal style={customStyles} isOpen={modalEdit} onRequestClose={closeModalEdit}>
                     <div className="pb-4 text-lg font-semibold text-slate-700 flex flex-row items-center justify-between">
                         <span>Chỉnh sửa trạng thái</span>
@@ -300,6 +322,35 @@ const Order = () => {
                             <button onClick={() => handleChangeStatus()}>
                                 <span className="text-white bg-blue-500 px-3 py-2 rounded-md cursor-pointer hover:bg-blue-700 transition-all ease-linear duration-200">
                                     Lưu
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+            )} */}
+            {modalConfirm && (
+                <Modal
+                    style={customStyles}
+                    isOpen={modalConfirm}
+                    onRequestClose={closeModalConfirm}
+                >
+                    <div className="flex flex-row gap-3 items-center">
+                        <span className="text-lg font-semibold">
+                            Xác nhận thay đổi trạng thái thành
+                        </span>
+                        <span className={newStatus[0]}>{newStatus[1]}</span>
+                        <span className="text-lg font-semibold">?</span>
+                    </div>
+                    <div className="mt-8">
+                        <div className="flex flex-row justify-end gap-3">
+                            <button onClick={closeModalConfirm}>
+                                <span className="text-red-500 px-3 py-2 hover:bg-red-100 hover:rounded-md transition-all ease-linear duration-200">
+                                    Hủy
+                                </span>
+                            </button>
+                            <button onClick={() => handleChangeStatus()}>
+                                <span className="text-white bg-blue-500 px-3 py-2 rounded-md cursor-pointer hover:bg-blue-700 transition-all ease-linear duration-200">
+                                    Xác nhận
                                 </span>
                             </button>
                         </div>
@@ -521,7 +572,7 @@ const Order = () => {
                         </div>
                     </div>
                 </div>
-                <div className="bg-white mr-3 rounded-lg">
+                <div className="bg-white mr-3 rounded-lg h-full">
                     <div className="px-4 pt-5">
                         <ul className="flex flex-row gap-5 text-base">
                             <li
@@ -653,7 +704,7 @@ const Order = () => {
                             </li>
                         </ul>
                     </div>
-                    <div className="relative overflow-x-auto px-4 py-5">
+                    <div className="relative h-full px-4 py-5">
                         <table class="w-full text-sm text-left rtl:text-right text dark:text-gray-400">
                             <thead class="text-xs text-gray-600 uppercase bg-gray-100 rounded-sm">
                                 <tr>
@@ -727,22 +778,131 @@ const Order = () => {
                                                         <i className="fa-solid fa-ellipsis fa-sm"></i>
                                                     </button>
                                                     {dropAction === index && (
-                                                        <div className="absolute top-0 translate-y-[26px] w-min-[300px] z-50 bg-white rounded-md">
+                                                        <div className="absolute top-0 -left-1/2 -translate-x-[50%] translate-y-[27px] z-30 bg-white rounded-md">
                                                             <ul className="border rounded-md shadow-md">
                                                                 <li className="flex flex-row gap-3 items-center px-2 py-2 hover:bg-gray-200 cursor-pointer">
                                                                     <i class="fa-regular fa-eye fa-sm"></i>
                                                                     <span>Xem chi tiết</span>
                                                                 </li>
-                                                                <li
-                                                                    className="flex flex-row gap-3 items-center px-2 py-2 hover:bg-gray-200 cursor-pointer"
-                                                                    onClick={() => {
-                                                                        setDropAction(-1);
-                                                                        openModalEdit(index);
-                                                                    }}
-                                                                >
-                                                                    <i class="fa-regular fa-pen-to-square fa-sm"></i>
-                                                                    <span>Chỉnh sửa</span>
-                                                                </li>
+                                                                {order.statusAction.length === 0 ? (
+                                                                    <li className="flex flex-row gap-3 items-center px-2 py-2 text-gray-500">
+                                                                        <i class="fa-regular fa-eye fa-sm"></i>
+                                                                        <span>
+                                                                            Thay đổi trạng thái
+                                                                        </span>
+                                                                    </li>
+                                                                ) : (
+                                                                    <li
+                                                                        className="relative flex flex-row gap-3 items-center px-2 py-2 hover:bg-gray-200 cursor-pointer
+                                                                    disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-500"
+                                                                        onClick={() => {
+                                                                            setDropAction(-1);
+                                                                            // openModalEdit(index);
+                                                                        }}
+                                                                        onMouseEnter={() => {
+                                                                            setDropChangeState(
+                                                                                index
+                                                                            );
+                                                                        }}
+                                                                        onMouseLeave={() => {
+                                                                            setDropChangeState(-1);
+                                                                        }}
+                                                                    >
+                                                                        <div>
+                                                                            <i class="fa-regular fa-pen-to-square fa-sm"></i>
+                                                                        </div>
+                                                                        <span>
+                                                                            Cập nhật trạng thái
+                                                                        </span>
+                                                                        <div className="text-gray-500">
+                                                                            <i class="fa-solid fa-caret-right"></i>
+                                                                        </div>
+                                                                        {dropChangeState ===
+                                                                            index && (
+                                                                            <div className="absolute top-0 translate-y-0 left-1/4 translate-x-[139px] z-40 bg-white">
+                                                                                <ul className="border rounded-md shadow-md">
+                                                                                    {/* Thành công */}
+                                                                                    {order
+                                                                                        .statusAction[0] && (
+                                                                                        <li
+                                                                                            onClick={() => {
+                                                                                                setNewStatus(
+                                                                                                    [
+                                                                                                        styleSuccess,
+                                                                                                        "Thành công",
+                                                                                                    ]
+                                                                                                );
+                                                                                                openModalConfirm(
+                                                                                                    index
+                                                                                                );
+                                                                                            }}
+                                                                                            className="flex flex-row gap-3 items-center px-2 py-2 hover:bg-gray-200 cursor-pointer"
+                                                                                        >
+                                                                                            <span>
+                                                                                                Thành
+                                                                                                công
+                                                                                            </span>
+                                                                                        </li>
+                                                                                    )}
+                                                                                    {order
+                                                                                        .statusAction[1] && (
+                                                                                        <li
+                                                                                            onClick={() => {
+                                                                                                setNewStatus(
+                                                                                                    [
+                                                                                                        styleCancel,
+                                                                                                        "Đã hủy",
+                                                                                                    ]
+                                                                                                );
+                                                                                                openModalConfirm(
+                                                                                                    index
+                                                                                                );
+                                                                                            }}
+                                                                                            className="flex flex-row gap-3 items-center px-2 py-2 hover:bg-gray-200 cursor-pointer"
+                                                                                        >
+                                                                                            <span>
+                                                                                                Đã
+                                                                                                hủy
+                                                                                            </span>
+                                                                                        </li>
+                                                                                    )}
+                                                                                    {order
+                                                                                        .statusAction[2] && (
+                                                                                        <li className="flex flex-row gap-3 items-center px-2 py-2 hover:bg-gray-200 cursor-pointer">
+                                                                                            <span>
+                                                                                                Trả
+                                                                                                hàng
+                                                                                            </span>
+                                                                                        </li>
+                                                                                    )}
+                                                                                    {order
+                                                                                        .statusAction[3] && (
+                                                                                        <li
+                                                                                            onClick={() => {
+                                                                                                setNewStatus(
+                                                                                                    [
+                                                                                                        styleShipping,
+                                                                                                        "Đang giao hàng",
+                                                                                                    ]
+                                                                                                );
+                                                                                                openModalConfirm(
+                                                                                                    index
+                                                                                                );
+                                                                                            }}
+                                                                                            className="flex flex-row gap-3 items-center px-2 py-2 hover:bg-gray-200 cursor-pointer"
+                                                                                        >
+                                                                                            <span>
+                                                                                                Đang
+                                                                                                giao
+                                                                                                hàng
+                                                                                            </span>
+                                                                                        </li>
+                                                                                    )}
+                                                                                </ul>
+                                                                            </div>
+                                                                        )}
+                                                                    </li>
+                                                                )}
                                                             </ul>
                                                         </div>
                                                     )}

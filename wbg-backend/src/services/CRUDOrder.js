@@ -69,8 +69,7 @@ const getAllOrders = async () => {
     try {
         let [r1, f1] = await connection.query(
             `select id, name, email, phone, delivery, paymentMethod, address, dateOrder, status, total
-            from orders
-            order by id desc`
+            from orders`
         );
         let dt = [];
         for (const result of r1) {

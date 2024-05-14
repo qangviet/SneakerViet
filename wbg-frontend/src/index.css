@@ -35,3 +35,6 @@
 .form-color-choice {
     @apply border inline-block align-middle rounded-sm appearance-none cursor-pointer size-5 disabled:opacity-75 disabled:cursor-default;
 }
+.card {
+    @apply bg-white mb-5 rounded-md border-0 border-transparent shadow-sm;
+}
