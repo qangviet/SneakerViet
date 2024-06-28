@@ -619,34 +619,34 @@ const ViewProduct = () => {
                         <table class="w-full text-sm text-left rtl:text-right text dark:text-gray-400">
                             <thead class="text-xs text-gray-600 uppercase bg-gray-100 rounded-sm">
                                 <tr>
-                                    <th scope="col" className="px-4 py-3">
+                                    <th scope="col" className="px-3 py-3">
                                         Product Code
                                     </th>
-                                    <th scope="col" className="px-4 py-3">
+                                    <th scope="col" className="px-3 py-3">
                                         Tên sản phẩm
                                     </th>
-                                    <th scope="col" className="px-4 py-3">
+                                    <th scope="col" className="px-3 py-3">
                                         Brand
                                     </th>
-                                    <th scope="col" className="px-4 py-3">
+                                    <th scope="col" className="px-3 py-3">
                                         Category
                                     </th>
-                                    <th scope="col" className="px-4 py-3">
+                                    <th scope="col" className="px-3 py-3">
                                         Giá gốc
                                     </th>
-                                    <th scope="col" className="px-4 py-3">
+                                    <th scope="col" className="px-3 py-3">
                                         Đã bán
                                     </th>
-                                    <th scope="col" className="px-4 py-3">
+                                    <th scope="col" className="px-3 py-3">
                                         Hàng còn
                                     </th>
-                                    <th scope="col" className="px-4 py-3">
+                                    <th scope="col" className="px-3 py-3">
                                         Sale
                                     </th>
-                                    <th scope="col" className="px-4 py-3">
+                                    <th scope="col" className="px-3 py-3">
                                         Trạng thái
                                     </th>
-                                    <th scope="col" className="px-4 py-3">
+                                    <th scope="col" className="px-3 py-3">
                                         Action
                                     </th>
                                 </tr>
@@ -657,11 +657,11 @@ const ViewProduct = () => {
                                         <tr className="bg-white border-b">
                                             <th
                                                 scope="row"
-                                                className="px-4 py-4 font-medium text-blue-500 whitespace-nowrap"
+                                                className="px-3 py-4 font-medium text-blue-500 whitespace-nowrap"
                                             >
                                                 #{product.code}
                                             </th>
-                                            <td className="px-4 py-4">
+                                            <td className="px-3 py-4">
                                                 <div className="flex flex-row gap-3 items-center">
                                                     <div className="w-10 h-10">
                                                         <img src={product.img} alt={product.name} />
@@ -669,17 +669,17 @@ const ViewProduct = () => {
                                                     <span>{product.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-4">
+                                            <td className="px-3 py-4">
                                                 <div className="px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-purple-100 border-purple-200 text-purple-500">
                                                     {product.brand}
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-4">
+                                            <td className="px-3 py-4">
                                                 <div className="px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-slate-100 border-slate-200 text-slate-500">
                                                     {product.category}
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-4">
+                                            <td className="px-3 py-4">
                                                 {product.price.toLocaleString()}₫
                                             </td>
                                             <td className="px-6 py-4">

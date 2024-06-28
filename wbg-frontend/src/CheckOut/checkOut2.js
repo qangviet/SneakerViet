@@ -26,6 +26,7 @@ const CheckOut2 = () => {
     let odID = useSelector((state) => state.order.orderID);
     const [total, setTotal] = useState(0);
     const products = useSelector((state) => state.cart.products);
+    const [total2, setTotal2] = useState(0);
 
     useEffect(() => {
         const totalPrice = () => {
@@ -33,8 +34,11 @@ const CheckOut2 = () => {
             for (const product of products) {
                 total += product.price * product.quantity;
             }
+            let total2 = total;
+
             if (orderInfo.method === "ship") total += 30000;
-            return total;
+            console.log(total2, total);
+            return [total2, total];
         };
         const getOrderInfo = async () => {
             dispatch(setLoadding(true));
@@ -50,10 +54,9 @@ const CheckOut2 = () => {
                     address: data.address,
                     note: "Ghi chú đơn hàng",
                 });
-                setTotal(totalPrice());
                 setOrderInfo({
                     orderID: odID,
-                    date: data.date,
+                    date: data.dateOrder,
                     method: data.delivery,
                 });
             } else {
@@ -66,6 +69,9 @@ const CheckOut2 = () => {
             navigate("/");
         } else {
             getOrderInfo();
+            const [total2, total] = totalPrice();
+            setTotal(total);
+            setTotal2(total2);
         }
     }, []);
 
@@ -278,7 +284,7 @@ const CheckOut2 = () => {
                                 <div className="mt-5 mx-20 text-gray-500">
                                     <div className="flex justify-between py-2">
                                         <span>Tạm tính</span>
-                                        <span>{addCommas(total)}₫</span>
+                                        <span>{addCommas(total2)}₫</span>
                                     </div>
                                     <div className="flex justify-between py-2">
                                         <span>Vận chuyển</span>

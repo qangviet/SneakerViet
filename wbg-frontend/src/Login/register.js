@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import img from "./login_img.jpg";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 function Register() {
     const navigate = useNavigate();
 
@@ -205,9 +205,9 @@ function Register() {
                         <div className="text-center pt-12 pb-12">
                             <p>
                                 Đã có tài khoản?{" "}
-                                <a href="/login" className="underline font-semibold">
+                                <Link to="/login" className="underline font-semibold">
                                     Đăng nhập.
-                                </a>
+                                </Link>
                             </p>
                         </div>
                     </div>

@@ -136,12 +136,14 @@ const ProductPage = () => {
                     <LoaddingSpiner />
                 </div>
             ) : (
-                <>
-                    <Header />
+                <div className="">
+                    <div className="max-w-screen-2xl text-base mx-auto">
+                        <Header />
+                    </div>
                     <div className="py-[0.5px] bg-slate-400 bg-opacity-35 shadow-slate-500"></div>
                     <div className="py-4 ml-32"> </div>
                     <div className="flex justify-center">
-                        <div className="main-contents 2xl:w-[1300px] xl:w-[1200px] lg:w-[1000px] flex flex-row">
+                        <div className="main-contents 2xl:[1300px] xl:w-[1200px] lg:w-[1000px] flex flex-row">
                             <div className="product-gallery basis-[60%] flex flex-row">
                                 <div className="thumbs-container basis-[9%] mr-6">
                                     {images.map((image, index) => {
@@ -352,7 +354,7 @@ const ProductPage = () => {
                             <h1 className="text-2xl font-bold">Thông tin chi tiết</h1>
                         </div>
                     </div> */}
-                </>
+                </div>
             )}
         </>
     );

@@ -110,38 +110,46 @@ const updateOrder = async (data) => {
             where id = ?`,
             [orderID]
         );
-        if (r1[0].status === "Thành công!") {
+        if (r1[0].status === "Thành công") {
             return {
                 EM: "Đơn hàng đã thành công, không thể cập nhật!",
                 EC: "1",
                 DT: "",
             };
-        } else if (r1[0].status === "Đã hủy!") {
+        } else if (r1[0].status === "Đã hủy") {
             return {
                 EM: "Đơn hàng đã hủy, không thể cập nhật!",
                 EC: "1",
                 DT: "",
             };
         }
-        if (status === "Thành công!") {
+        if (status === "Thành công") {
             let [r2, f2] = await connection.query(
                 `select products from orders
                 where id = ?`,
                 [orderID]
             );
             let products = JSON.parse(r2[0].products);
+            console.log(products);
             for (const product of products) {
                 let [r3, f3] = await connection.query(
                     `select color from product
                     where name = ?`,
                     [product.name]
                 );
-                let color = JSON.stringify(r3[0].color);
+                let color = JSON.parse(r3[0].color);
+                console.log(color);
                 for (const s_q of color.size_quan) {
                     if (s_q.size === product.size) {
                         s_q.quantity = parseInt(s_q.quantity) - parseInt(product.quantity);
                     }
                 }
+                await connection.query(
+                    `update product
+                    set color = ?
+                    where name = ?`,
+                    [JSON.stringify(color), product.name]
+                );
                 const [r4, f4] = await connection.query(
                     `select code from product
                     where name = ?`,

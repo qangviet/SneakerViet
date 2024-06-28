@@ -50,6 +50,48 @@ const SideCart = () => {
         dispatch(setLoadding(false));
     };
 
+    const EmptyCart = (
+        <div className="w-[450px] h-full">
+            <div className="bg-slate-100">
+                <div
+                    className="flex justify-end px-4 hover:cursor-pointer py-8 hover:text-red-500 text-gray-500"
+                    onClick={closeModalCart}
+                >
+                    <i className="fa-solid fa-xmark fa-xl"></i>
+                </div>
+            </div>
+            <div className="flex flex-col gap-5 justify-center items-center h-[70%]">
+                <div className="px-7 py-7 rounded-[50%] bg-gray-100 text-gray-500">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="feather feather-shopping-bag w-8 h-8"
+                    >
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                </div>
+                <div className="text-gray-500 font-medium mb-16">
+                    Chưa có sản phẩm trong giỏ hàng
+                </div>
+                <div
+                    onClick={closeModalCart}
+                    className="border-solid border-[2px] border-blue-500 text-blue-500 cursor-pointer px-5 py-2"
+                >
+                    <button>Tiếp tục mua sắm</button>
+                </div>
+            </div>
+        </div>
+    );
+
     const DrawerList = (
         <div className="w-[450px]">
             <div className="bg-slate-100">
@@ -150,6 +192,8 @@ const SideCart = () => {
                     <div className="flex justify-center items-center w-[450px] h-[100vh]">
                         <LoaddingSpiner />
                     </div>
+                ) : products.length === 0 ? (
+                    EmptyCart
                 ) : (
                     DrawerList
                 )}

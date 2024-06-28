@@ -10,7 +10,7 @@ const DashBroads = () => {
         totalOrder: 1000,
         successed: 900,
         cancel: 100,
-        pending: 10,
+        pending: 4,
     };
     const [yearChart, setYearChart] = useState(2023);
     const handlePending = () => {

@@ -773,7 +773,7 @@ const CreateProduct = () => {
                                 <option value="public">Public</option>
                             </select>
                         </div>
-                        <div className="xl:col-span-12">
+                        {/* <div className="xl:col-span-12">
                             <label className="inline-block mb-2 text-base font-medium">
                                 Product Tag
                             </label>
@@ -809,7 +809,7 @@ const CreateProduct = () => {
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="flex justify-end gap-2 mt-4">
                         <button
